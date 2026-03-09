@@ -18,18 +18,18 @@ function isActiveGuru(string $page): string {
   </div>
   <nav class="flex-1 overflow-y-auto py-4 px-3">
     <a href="../guru/dashboard.php" class="flex items-center gap-3 px-3 py-2 rounded-lg mb-1 text-sm transition <?= isActiveGuru('dashboard.php') ?>">
-      <span>🏠</span> Dashboard
+      <i class="fa fa-tachometer-alt w-4 text-center"></i> Dashboard
     </a>
     <p class="text-gray-500 text-xs font-semibold uppercase px-3 py-2 mt-2">Ujian CBT</p>
     <a href="../guru/bank_soal.php" class="flex items-center gap-3 px-3 py-2 rounded-lg mb-1 text-sm transition <?= isActiveGuru('bank_soal.php') ?>">
-      <span>📋</span> Bank Soal
+      <i class="fa fa-clipboard-list w-4 text-center"></i> Bank Soal
     </a>
     <a href="../guru/ruang_ujian.php" class="flex items-center gap-3 px-3 py-2 rounded-lg mb-1 text-sm transition <?= isActiveGuru('ruang_ujian.php') ?>">
-      <span>🏢</span> Ruang Ujian
+      <i class="fa fa-door-open w-4 text-center"></i> Ruang Ujian
     </a>
     <p class="text-gray-500 text-xs font-semibold uppercase px-3 py-2 mt-2">Pengaturan</p>
     <a href="#" onclick="confirmLogout()" class="flex items-center gap-3 px-3 py-2 rounded-lg mb-1 text-sm transition text-red-400 hover:bg-red-900 hover:text-red-300">
-      <span>🚪</span> Logout
+      <i class="fa fa-sign-out-alt w-4 text-center"></i> Logout
     </a>
   </nav>
 </aside>
