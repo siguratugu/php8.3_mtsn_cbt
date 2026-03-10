@@ -994,12 +994,14 @@ function escHtml(str) {
 }
 
 async function postJson(params) {
-    const res = await fetch('', {
+    const res = await fetch(window.location.pathname, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ csrf_token: CSRF, ...params }),
     });
-    return res.json();
+    const text = await res.text();
+    try { return JSON.parse(text); }
+    catch (e) { throw new Error('Server tidak mengembalikan JSON yang valid. Response: ' + text.substring(0, 200)); }
 }
 
 // ── Main Table: Pagination + Search ───────────────────────────────────────────
@@ -1178,7 +1180,7 @@ async function loadBankSoal() {
 
 async function saveTambahRuang() {
     const namaRuang     = document.getElementById('t-nama-ruang').value.trim();
-    const pembuat       = document.querySelector('input[name="t-pembuat"]:checked').value;
+    const pembuat       = document.querySelector('input[name="t-pembuat"]:checked')?.value || 'admin';
     const guruId        = document.getElementById('t-guru-id').value;
     const bankSoalId    = document.getElementById('t-bank-soal-id').value;
     const waktuHentikan = document.getElementById('t-waktu-hentikan').value;
@@ -1187,8 +1189,7 @@ async function saveTambahRuang() {
     const tanggalSelesai= document.getElementById('t-tanggal-selesai').value;
     const acakSoal      = document.getElementById('t-acak-soal').checked    ? '1' : '0';
     const acakJawaban   = document.getElementById('t-acak-jawaban').checked ? '1' : '0';
-    const kelasIds      = [...document.getElementById('t-kelas-ids').options]
-                              .filter(o => o.selected).map(o => o.value);
+    const kelasIds      = [...document.getElementById('t-kelas-ids').selectedOptions].map(o => o.value);
 
     if (!namaRuang)  { Swal.fire({ icon:'warning', title:'Perhatian', text:'Nama ruang ujian wajib diisi' }); return; }
     if (!bankSoalId) { Swal.fire({ icon:'warning', title:'Perhatian', text:'Pilih bank soal terlebih dahulu' }); return; }
@@ -1212,8 +1213,11 @@ async function saveTambahRuang() {
     btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Menyimpan…';
 
     try {
-        const res  = await fetch('', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params });
-        const data = await res.json();
+        const res  = await fetch(window.location.pathname, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: params });
+        const text = await res.text();
+        let data;
+        try { data = JSON.parse(text); }
+        catch (e) { throw new Error('Server tidak mengembalikan JSON yang valid. Response: ' + text.substring(0, 200)); }
         if (data.success) {
             closeTambahModal();
             Swal.fire({
@@ -1225,8 +1229,9 @@ async function saveTambahRuang() {
         } else {
             Swal.fire({ icon:'error', title:'Gagal', text: data.message });
         }
-    } catch {
-        Swal.fire({ icon:'error', title:'Error', text:'Terjadi kesalahan koneksi' });
+    } catch (e) {
+        console.error('saveTambahRuang error:', e);
+        Swal.fire({ icon:'error', title:'Error', text: e.message || 'Terjadi kesalahan koneksi' });
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa fa-save"></i> Simpan';
